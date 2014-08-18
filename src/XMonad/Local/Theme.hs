@@ -31,7 +31,7 @@ xmonadColors x = x { normalBorderColor  = "#111111"
 
 --------------------------------------------------------------------------------
 decoTheme :: Theme
-decoTheme = defaultTheme { decoHeight          = 14
+decoTheme = defaultTheme { decoHeight          = 0
                          , activeColor         = windowDecoColor
                          , activeBorderColor   = windowBorderColor
                          , activeTextColor     = "#222222"

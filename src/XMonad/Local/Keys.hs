@@ -8,63 +8,71 @@ the LICENSE file. -}
 
 --------------------------------------------------------------------------------
 -- | Key bindings.
-module XMonad.Local.Keys (keys, rawKeys) where
+module XMonad.Local.Keys (keys) where
 
 --------------------------------------------------------------------------------
 -- General Haskell Packages.
-import qualified Data.Map as M
-import Graphics.X11.Xlib
-import System.Exit (exitSuccess)
+--import qualified Data.Map as M
+--import Graphics.X11.Xlib
+--import System.Exit (exitSuccess)
+
+import Control.Monad (join)
 
 --------------------------------------------------------------------------------
 -- Package: xmonad.
 import XMonad.Core hiding (keys)
-import XMonad.Layout
-import XMonad.Operations
-import qualified XMonad.StackSet as W
+--import XMonad.Layout
+--import XMonad.Operations
+--import qualified XMonad.StackSet as W
 
 --------------------------------------------------------------------------------
 -- Package: xmonad-contrib.
-import XMonad.Actions.CycleSelectedLayouts (cycleThroughLayouts)
-import XMonad.Actions.OnScreen (onlyOnScreen)
-import XMonad.Actions.PhysicalScreens (onPrevNeighbour, onNextNeighbour)
-import XMonad.Actions.Promote (promote)
-import XMonad.Actions.UpdatePointer (PointerPosition(..), updatePointer)
-import XMonad.Hooks.ManageDocks (ToggleStruts(..))
-import qualified XMonad.Layout.BoringWindows as Boring
-import XMonad.Layout.LayoutCombinators
-import XMonad.Layout.Maximize (maximizeRestore)
-import XMonad.Layout.ResizableTile
-import XMonad.Prompt.Shell (shellPrompt)
-import XMonad.Prompt.Window (windowPromptGoto)
-import XMonad.Prompt.XMonad (xmonadPrompt)
-import XMonad.Util.EZConfig (mkKeymap)
-import XMonad.Util.Paste (sendKey)
+--import XMonad.Actions.CycleSelectedLayouts (cycleThroughLayouts)
+--import XMonad.Actions.OnScreen (onlyOnScreen)
+--import XMonad.Actions.PhysicalScreens (onPrevNeighbour, onNextNeighbour)
+--import XMonad.Actions.Promote (promote)
+--import XMonad.Actions.UpdatePointer (PointerPosition(..), updatePointer)
+--import XMonad.Hooks.ManageDocks (ToggleStruts(..))
+--import qualified XMonad.Layout.BoringWindows as Boring
+--import XMonad.Layout.LayoutCombinators
+--import XMonad.Layout.Maximize (maximizeRestore)
+--import XMonad.Layout.ResizableTile
+--import XMonad.Prompt.Shell (shellPrompt)
+--import XMonad.Prompt.Window (windowPromptGoto)
+--import XMonad.Prompt.XMonad (xmonadPrompt)
+--import XMonad.Util.EZConfig (mkKeymap)
+--import XMonad.Util.Paste (sendKey)
 
 --------------------------------------------------------------------------------
 -- Local modules.
-import XMonad.Local.Music (albumPrompt, radioPrompt)
-import qualified XMonad.Local.Prompt as Local
-import XMonad.Local.Workspaces (asKey, viewPrevWS)
+--import XMonad.Local.Music (albumPrompt, radioPrompt)
+--import qualified XMonad.Local.Prompt as Local
+--import XMonad.Local.Workspaces (asKey, viewPrevWS)
 
 --------------------------------------------------------------------------------
 -- Join all the key maps into a single list and send it through @mkKeymap@.
-keys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
-keys c = mkKeymap c (rawKeys c)
+--keys :: XConfig Layout -> M.Map (KeyMask, KeySym) (X ())
+--keys c = mkKeymap c (rawKeys c)
 
 --------------------------------------------------------------------------------
 -- | Access the unprocessed key meant to be fed into @mkKeymap@.
-rawKeys :: XConfig Layout -> [(String, X ())]
-rawKeys c = concatMap ($ c) keymaps where
-  keymaps = [ baseKeys
-            , windowKeys
-            , workspaceKeys
-            , layoutKeys
-            , screenKeys
-            , appKeys
-            , musicKeys
+--rawKeys :: XConfig Layout -> [(String, X ())]
+--rawKeys c = concatMap ($ c) keymaps where
+--  keymaps = [ --baseKeys
+--            , windowKeys
+--            , workspaceKeys
+--            , layoutKeys
+--            , screenKeys
+--            , appKeys
+--              musicKeys
+--            ]
+
+keys :: [(String, X ())]
+keys = join [ musicKeys
+            , displayKeys
             ]
 
+{-
 --------------------------------------------------------------------------------
 -- | Change focus and update the mouse pointer.
 changeFocus :: X () -> X ()
@@ -175,21 +183,21 @@ appKeys c =
   , ("<XF86WebCam>",         spawn "tptoggle.sh") -- Weird.
   , ("<XF86TouchpadToggle>", spawn "tptoggle.sh")
   ]
+-}
+
+displayKeys :: [(String, X ())]
+displayKeys =
+  [ ("M4-<F1>", spawn "xrandr --output LVDS1 --off --output VGA1 --auto && xset r rate 200 55")
+  , ("M4-<F2>", spawn "xrandr --output LVDS1 --auto --output VGA1 --off && xset r rate 200 55")
+  ]
 
 --------------------------------------------------------------------------------
 -- Keys for controlling music and volume.
-musicKeys :: XConfig Layout -> [(String, X ())]
-musicKeys _ =
-  [ ("M-<F1>",  spawn "mpc-pause")
-  , ("M-<F2>",  spawn "mpc prev")
-  , ("M-<F3>",  spawn "mpc next")
-  , ("M-<F4>",  spawn "mpc clear")
-  , ("M4-<F1>", spawn "amixer set Master toggle")
-  , ("M4-<F2>", spawn "amixer set PCM 5%-")
-  , ("M4-<F3>", spawn "amixer set PCM 5%+")
-
+musicKeys :: [(String, X ())]
+musicKeys =
+  [ 
     -- Keys for my laptop and keyboards with media keys.
-  , ("M-<XF86AudioMute>",        spawn "mpc-pause")
+    ("M-<XF86AudioMute>",        spawn "mpc-pause")
   , ("M-<XF86AudioLowerVolume>", spawn "mpc prev")
   , ("M-<XF86AudioRaiseVolume>", spawn "mpc next")
   , ("<XF86AudioMute>",          spawn "amixer set Master toggle")
@@ -197,6 +205,6 @@ musicKeys _ =
   , ("<XF86AudioRaiseVolume>",   spawn "amixer set Master 5%+")
 
     -- Prompt to change radio stations.
-  , ("M4-<Space>",     radioPrompt Local.promptConfig)
-  , ("C-z M4-<Space>", albumPrompt Local.promptConfig)
+--  , ("M4-<Space>",     radioPrompt Local.promptConfig)
+--  , ("C-z M4-<Space>", albumPrompt Local.promptConfig)
   ]

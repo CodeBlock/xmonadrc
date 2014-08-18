@@ -14,43 +14,31 @@ module XMonad.Local.Layout (layoutHook) where
 
 --------------------------------------------------------------------------------
 import XMonad hiding ((|||), layoutHook, float)
-import XMonad.Hooks.ManageDocks (avoidStruts)
-import XMonad.Layout.BoringWindows (boringWindows)
+import XMonad.Config.Desktop
+import XMonad.Layout.FixedColumn
+import XMonad.Layout.Fullscreen
+import XMonad.Layout.Grid
 import XMonad.Layout.LayoutCombinators
-import XMonad.Layout.Maximize
-import XMonad.Layout.NoBorders (noBorders)
-import XMonad.Layout.NoFrillsDecoration
+import XMonad.Layout.Magnifier
+import XMonad.Layout.Named
+import XMonad.Layout.NoBorders
 import XMonad.Layout.PerWorkspace (onWorkspace)
-import XMonad.Layout.Reflect (reflectHoriz)
-import XMonad.Layout.Renamed
+import XMonad.Layout.Reflect
 import XMonad.Layout.ResizableTile
-import XMonad.Layout.SimplestFloat (simplestFloat)
-import XMonad.Layout.ThreeColumns (ThreeCol(..))
-import XMonad.Layout.TwoPane (TwoPane(..))
+import XMonad.Layout.ToggleLayouts
 
---------------------------------------------------------------------------------
-import XMonad.Local.Theme (decoTheme)
+myTile = named "Tall" $ ResizableTall 1 (3/100) (1/2) []
+myCode = named "Coding" $ magnifiercz' 1.2 $ FixedColumn 1 1 80 10
+myWide = named "On Top" $ Mirror myTile
+myWideFlip = named "On Bottom" $ reflectVert $ myWide
+myAllWindows = named "All Windows" $ noBorders (fullscreenFull Grid)
+noTitles l = desktopLayoutModifiers l
 
---------------------------------------------------------------------------------
--- | XMonad layout hook.  No type signature because it's freaking
--- nasty and I can't come up with a way to make it generic.
-layoutHook = avoidStruts $ boringWindows layouts
+myLayouts = smartBorders $ noTitles
+        $ onWorkspace "code" codeLayouts
+        $ allLayouts
+    where
+        allLayouts = myTile ||| myWide ||| myWideFlip ||| Full
+        codeLayouts = myCode ||| myTile ||| myWide ||| myWideFlip ||| Full
 
---------------------------------------------------------------------------------
--- | All of the layouts and layout modifiers that I use.  See the
--- documentation for @layoutHook@ above for information about the type
--- signature.
-layouts =  floatF12 maxToggle where
-  tall      = renamed [Replace "Tall"]  $ ResizableTall 1 (1.5/100) (3/5) []
-  rtall     = renamed [Replace "RTall"] $ reflectHoriz tall
-  two       = renamed [Replace "2Col"]  $ TwoPane (3/100) (3/5)
-  three     = renamed [Replace "3Col"]  $ ThreeColMid 1 (3/100) (1/2)
-  full      = renamed [Replace "Full"]  $ noBorders Full
-  float     = renamed [Replace "Float"] simplestFloat
-  floatF12  = onWorkspace "F12" float
-  maxToggle = renamed [CutWordsLeft 1] $ maximize toggle
-  toggle    = deco tall ||| deco rtall ||| deco three ||| deco two ||| full
-
---------------------------------------------------------------------------------
--- | Add simple decorations to windows.
-deco = renamed [CutWordsLeft 1] . noFrillsDeco shrinkText decoTheme
+layoutHook = toggleLayouts myAllWindows myLayouts

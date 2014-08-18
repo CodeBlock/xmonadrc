@@ -13,8 +13,8 @@ module Main where
 --------------------------------------------------------------------------------
 import qualified Data.Map as M
 import qualified Data.Set as S
-import XMonad
-import XMonad.Local.Keys (rawKeys)
+import XMonad hiding (keys)
+import XMonad.Local.Keys (keys)
 import XMonad.StackSet (new)
 import XMonad.Util.EZConfig (checkKeymap)
 
@@ -49,5 +49,5 @@ main = do
                   }
 
   -- Check key bindings, errors go to xmessage.
-  _ <- runX cf st $ checkKeymap xmc (rawKeys xmc)
+  _ <- runX cf st $ checkKeymap xmc keys
   return ()

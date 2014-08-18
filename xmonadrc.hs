@@ -21,6 +21,7 @@ import qualified XMonad.Local.Layout as Local
 import qualified XMonad.Local.Log    as Local
 import qualified XMonad.Local.Theme  as Local
 import qualified XMonad.Local.Workspaces as Workspaces
+import XMonad.Util.EZConfig(additionalKeysP)
 import XMonad.Util.Run (spawnPipe)
 
 --------------------------------------------------------------------------------
@@ -28,16 +29,16 @@ import XMonad.Util.Run (spawnPipe)
 --
 -- config :: Handle -> XConfig a
 config xmobar =
-  defaultConfig { terminal           = "mlclient"
+  defaultConfig { terminal           = "urxvt256c"
                 , layoutHook         = Local.layoutHook
                 , manageHook         = Local.manageHook
                 , handleEventHook    = Local.handleEventHook
                 , workspaces         = Workspaces.names
-                , modMask            = mod3Mask
-                , keys               = Local.keys
+                , modMask            = mod4Mask
+--                , keys               = Local.keys
                 , logHook            = Local.logHook xmobar
                 , focusFollowsMouse  = False
-                }
+                } `additionalKeysP` Local.keys
 
 --------------------------------------------------------------------------------
 main :: IO ()
